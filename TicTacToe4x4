@@ -1,0 +1,476 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+/**
+ * Plays a game of Tic Tac Toe on a 4x4 grid
+ * @author Sarah Nasser
+ * @version 1.0 January 16, 2024
+ */
+
+public class TicTacToe4x4 {
+    //The Tic Tac Toe grid
+    private static final char[][] rowsColumns = new char[4][4];
+    //Represents number of rounds the human player won
+    private int humanWins;
+    //Represents the number of rounds the computer player won
+    private int computerWins;
+
+    /**
+     * Class constructor specifying the initial number of rounds the
+     * human player won and the initial number of rounds the
+     * computer player won before a game starts
+     */
+    public TicTacToe4x4() {
+        humanWins = 0;
+        computerWins = 0;
+    }
+
+    /**
+     * Plays a game of Tic Tac Toe between the human player and computer player
+     */
+    public void playGame() {
+        //Instructions for game
+        System.out.println("\n *What you type must not be in double or " +
+                "single quotes*: \n Put X in first row, first column--Type " +
+                "1 \n Put X in first row, second column--Type 2 \n Put X in " +
+                "first row, third column--Type 3 \n Put X in first row, " +
+                "fourth column--Type 4 \n Put X in second row, first " +
+                "column--Type 5 \n Put X in second row, second " +
+                "column--Type 6 \n Put X in second row, third column--Type " +
+                "7 \n Put X in second row, fourth column--Type 8 \n Put X " +
+                "in third row, first column--Type 9 \n Put X in third " +
+                "row, second column--Type 10 \n Put X in third row, third " +
+                "column--Type 11 \n Put X in third row, fourth column--Type " +
+                "12 \n Put X in fourth row, first column--Type 13 \n Put X " +
+                "in fourth row, second column--Type 14 \n Put X in fourth " +
+                "row, third column--Type 15 \n Put X in fourth row, fourth " +
+                "column--Type 16 \n");
+        //Gets input on the number of rounds the human player wants to play
+        Scanner userInput = new Scanner (System.in);
+        System.out.println("How many rounds of Tic Tac Toe do you want " +
+                "to play?");
+        int numberRounds = userInput.nextInt();
+        int currentRound = 1;
+        String winner = "";
+
+        //Sets up the Tic Tac Toe grid before the game by making
+        // all the spaces blank
+        for (char[] rowsColumn : rowsColumns) {
+            Arrays.fill(rowsColumn, ' ');
+        }
+
+        //Plays the number of rounds of Tic Tac Toe the human player wants
+        while(currentRound <= numberRounds) {
+            int numberEmptySpaces = 16;
+            boolean gameResultMade = false;
+
+            System.out.println("\n" + "------------------------------------" +
+                    "------------------------------------------------------" +
+                    "--------------------------------------" + "\n Round: " +
+                    currentRound + "\n" + "\n");
+
+            //Game ends when the human player wins, the computer player wins,
+            // or when there is a draw
+            while(!gameResultMade) {
+                System.out.println("Your turn: " + "\n");
+                int humanChoice = 0;
+
+                //Lets the human player make a move
+                try {
+                    humanChoice = userInput.nextInt();
+                }
+                //Catches the NumberFormatException that results when the
+                // human player does not type an integer
+                catch (Exception nfe) {
+                    System.out.println("Type an integer from 1 to 16 " +
+                            "(inclusive)");
+                    System.exit(1);
+                }
+
+                //Lets the computer player make a move
+                int computerChoice = (int) ((Math.random() * 16) + 1);
+
+                //Ensures that the human player gets another chance each time
+                // their input is not valid, and also that the human player do
+                // not get more chances in their turn than they should have
+                boolean validHumanMove = false;
+                while(!validHumanMove) {
+                    if(makeHumanMove(humanChoice) && humanChoice > 0
+                            && humanChoice < 17) {
+                        validHumanMove = true;
+                    }
+                    else {
+                        //Accounts for the case in which the human player
+                        // types invalid input (any number that is not between
+                        // 1 and 16 (inclusive))
+                        if(humanChoice <= 0 || humanChoice > 16) {
+                            System.out.println("Choose a number between 1 " +
+                                    "and 16 (inclusive).");
+                        }
+                        //Accounts for the case in which the human player
+                        // attempts to put an X in a space that has
+                        // already been taken
+                        else {
+                            System.out.println("This spot has already been " +
+                                    "taken. Try again.");
+                        }
+                        humanChoice = userInput.nextInt();
+                    }
+                }
+
+                //Each time the human player or computer player makes a move,
+                // the number of empty spaces in the grid decreases by one.
+                numberEmptySpaces--;
+                //Prints the grid after each time the human player or
+                // computer player makes a move
+                System.out.println(drawGrid(rowsColumns));
+                //Ends the round by checking that the human player won,
+                // the computer player won, or there is a draw
+                if(printGameResults(winner, numberEmptySpaces, humanWins,
+                        computerWins)) {
+                    gameResultMade = true;
+                    break;
+                }
+
+                //Lets the computer player make a randomized move from
+                // 1 to 9 (inclusive)
+                System.out.println("Computer turn: " + "\n");
+
+                //Ensures that the computer player gets another chance each
+                // time their input is not valid, and also that the
+                // computer player does not get more chances in their turn
+                // than they should have
+                boolean validComputerMove = false;
+                while(!validComputerMove) {
+                    if(makeComputerMove(computerChoice)) {
+                        validComputerMove = true;
+                    }
+                    //Accounts for the case in which the computer player
+                    // attempts to put an O in a space that has already
+                    // been taken
+                    else {
+                        computerChoice = (int) ((Math.random() * 16) + 1);
+                    }
+                }
+
+                numberEmptySpaces--;
+                System.out.println(drawGrid(rowsColumns));
+                if(printGameResults(winner, numberEmptySpaces, humanWins,
+                        computerWins)) {
+                    gameResultMade = true;
+                }
+            }
+            currentRound++;
+            //Resets all the spaces in the grid after the results of the round
+            // have been determined only if there is a next possible round
+            if(currentRound != numberRounds + 1) {
+                rowsColumns[0][0] = ' ';
+                rowsColumns[0][1] = ' ';
+                rowsColumns[0][2] = ' ';
+                rowsColumns[0][3] = ' ';
+                rowsColumns[1][0] = ' ';
+                rowsColumns[1][1] = ' ';
+                rowsColumns[1][2] = ' ';
+                rowsColumns[1][3] = ' ';
+                rowsColumns[2][0] = ' ';
+                rowsColumns[2][1] = ' ';
+                rowsColumns[2][2] = ' ';
+                rowsColumns[2][3] = ' ';
+                rowsColumns[3][0] = ' ';
+                rowsColumns[3][1] = ' ';
+                rowsColumns[3][2] = ' ';
+                rowsColumns[3][3] = ' ';
+            }
+        }
+
+        //After the number of rounds chosen by the human player, decide who
+        // won the majority of the rounds and if the human player has the same
+        // number of wins as the computer player
+        if(humanWins > computerWins) {
+            System.out.println("You won most of the rounds.");
+        }
+        else if(humanWins < computerWins) {
+            System.out.println("The computer won most of the rounds.");
+        }
+        else {
+            System.out.println("You won the same number of rounds as " +
+                    "the computer.");
+        }
+    }
+
+    /**
+     * Handles the logic for when the human player makes a move
+     * @param humanChoice the space in the grid where the human player
+     * chooses to put an X
+     * @return a conditional indicating whether the human player made a valid
+     * move (i.e. they choose a number between 1 and 16 (inclusive), do not
+     * make the same move more than once, and do not try to replace an O in a
+     * space with an X)
+     */
+    public boolean makeHumanMove(int humanChoice) {
+        if(humanChoice == 1 && rowsColumns[0][0] == ' ') {
+            rowsColumns[0][0] = 'X';
+        }
+        else if(humanChoice == 2 && rowsColumns[0][1] == ' ') {
+            rowsColumns[0][1] = 'X';
+        }
+        else if(humanChoice == 3 && rowsColumns[0][2] == ' ') {
+            rowsColumns[0][2] = 'X';
+        }
+        else if(humanChoice == 4 && rowsColumns[0][3] == ' ') {
+            rowsColumns[0][3] = 'X';
+        }
+        else if(humanChoice == 5 && rowsColumns[1][0] == ' ') {
+            rowsColumns[1][0] = 'X';
+        }
+        else if(humanChoice == 6 && rowsColumns[1][1] == ' ') {
+            rowsColumns[1][1] = 'X';
+        }
+        else if(humanChoice == 7 && rowsColumns[1][2] == ' ') {
+            rowsColumns[1][2] = 'X';
+        }
+        else if(humanChoice == 8 && rowsColumns[1][3] == ' ') {
+            rowsColumns[1][3] = 'X';
+        }
+        else if(humanChoice == 9 && rowsColumns[2][0] == ' ') {
+            rowsColumns[2][0] = 'X';
+        }
+        else if(humanChoice == 10 && rowsColumns[2][1] == ' ') {
+            rowsColumns[2][1] = 'X';
+        }
+        else if(humanChoice == 11 && rowsColumns[2][2] == ' ') {
+            rowsColumns[2][2] = 'X';
+        }
+        else if(humanChoice == 12 && rowsColumns[2][3] == ' ') {
+            rowsColumns[2][3] = 'X';
+        }
+        else if(humanChoice == 13 && rowsColumns[3][0] == ' ') {
+            rowsColumns[3][0] = 'X';
+        }
+        else if(humanChoice == 14 && rowsColumns[3][1] == ' ') {
+            rowsColumns[3][1] = 'X';
+        }
+        else if(humanChoice == 15 && rowsColumns[3][2] == ' ') {
+            rowsColumns[3][2] = 'X';
+        }
+        else if(humanChoice == 16 && rowsColumns[3][3] == ' ') {
+            rowsColumns[3][3] = 'X';
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Handles the logic for when the computer player makes a move
+     * @param computerChoice the space in the grid where the computer player
+     * chooses to put an O
+     * @return a conditional indicating whether the computer player made a
+     * valid move (i.e. they choose a number between 1 and 16 (inclusive), do
+     * not make the same move more than once, and do not try to replace an X
+     * in a space with an O)
+     */
+    public static boolean makeComputerMove(int computerChoice) {
+        if(computerChoice == 1 && rowsColumns[0][0] == ' ') {
+            rowsColumns[0][0] = 'O';
+        }
+        else if(computerChoice == 2 && rowsColumns[0][1] == ' ') {
+            rowsColumns[0][1] = 'O';
+        }
+        else if(computerChoice == 3 && rowsColumns[0][2] == ' ') {
+            rowsColumns[0][2] = 'O';
+        }
+        else if(computerChoice == 4 && rowsColumns[0][3] == ' ') {
+            rowsColumns[0][3] = 'O';
+        }
+        else if(computerChoice == 5 && rowsColumns[1][0] == ' ') {
+            rowsColumns[1][0] = 'O';
+        }
+        else if(computerChoice == 6 && rowsColumns[1][1] == ' ') {
+            rowsColumns[1][1] = 'O';
+        }
+        else if(computerChoice == 7 && rowsColumns[1][2] == ' ') {
+            rowsColumns[1][2] = 'O';
+        }
+        else if(computerChoice == 8 && rowsColumns[1][3] == ' ') {
+            rowsColumns[1][3] = 'O';
+        }
+        else if(computerChoice == 9 && rowsColumns[2][0] == ' ') {
+            rowsColumns[2][0] = 'O';
+        }
+        else if(computerChoice == 10 && rowsColumns[2][1] == ' ') {
+            rowsColumns[2][1] = 'O';
+        }
+        else if(computerChoice == 11 && rowsColumns[2][2] == ' ') {
+            rowsColumns[2][2] = 'O';
+        }
+        else if(computerChoice == 12 && rowsColumns[2][3] == ' ') {
+            rowsColumns[2][3] = 'O';
+        }
+        else if(computerChoice == 13 && rowsColumns[3][0] == ' ') {
+            rowsColumns[3][0] = 'O';
+        }
+        else if(computerChoice == 14 && rowsColumns[3][1] == ' ') {
+            rowsColumns[3][1] = 'O';
+        }
+        else if(computerChoice == 15 && rowsColumns[3][2] == ' ') {
+            rowsColumns[3][2] = 'O';
+        }
+        else if(computerChoice == 16 && rowsColumns[3][3] == ' ') {
+            rowsColumns[3][3] = 'O';
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Prints the Tic Tac Toe grid
+     * @param rowsColumns the Tic Tac Toe grid
+     * @return the grid
+     */
+    public static String drawGrid(char[][] rowsColumns) {
+        //Creates and prints the grid after the human player or
+        // computer player make a move
+        String grid = (" " + rowsColumns[0][0] + " | " +
+                rowsColumns[0][1] + " | " + rowsColumns[0][2] +
+                " | " + rowsColumns[0][3] + "\n");
+        grid += ("---------------" + "\n");
+        grid += (" " + rowsColumns[1][0] + " | " + rowsColumns[1][1] +
+                " | " + rowsColumns[1][2] + " | " + rowsColumns[1][3] + "\n");
+        grid += ("---------------" + "\n");
+        grid += (" " + rowsColumns[2][0] + " | " + rowsColumns[2][1] +
+                " | " + rowsColumns[2][2] + " | " + rowsColumns[2][3] + "\n");
+        grid += ("---------------" + "\n");
+        grid += (" " + rowsColumns[3][0] + " | " + rowsColumns[3][1] +
+                " | " + rowsColumns[3][2] + " | " + rowsColumns[3][3] + "\n");
+
+        return grid;
+    }
+
+    /**
+     * Determines the winner of a round
+     * @param rowsColumns the Tic Tac Toe grid
+     * @param numberEmptySpaces the number of empty spaces left in the grid
+     * @return the winner of the round
+     */
+    public static String decideWinner(char[][] rowsColumns,
+                                      int numberEmptySpaces) {
+        String winner = "";
+        //If the human player places 4 X's horizontally, vertically, or
+        // diagonally, they won the round.
+        if((rowsColumns[0][0] == 'X' && rowsColumns[0][1] == 'X' &&
+                rowsColumns[0][2] == 'X' && rowsColumns[0][3] == 'X') ||
+                (rowsColumns[1][0] == 'X' && rowsColumns[1][1] == 'X' &&
+                        rowsColumns[1][2] == 'X' && rowsColumns[1][3] == 'X')
+                || (rowsColumns[2][0] == 'X' && rowsColumns[2][1] == 'X' &&
+                rowsColumns[2][2] == 'X' && rowsColumns[2][3] == 'X') ||
+                (rowsColumns[3][0] == 'X' && rowsColumns[3][1] == 'X' &&
+                        rowsColumns[3][2] == 'X' && rowsColumns[3][3] == 'X')
+                || (rowsColumns[0][0] == 'X' && rowsColumns[1][0] == 'X' &&
+                rowsColumns[2][0] == 'X' && rowsColumns[3][0] == 'X') ||
+                (rowsColumns[0][1] == 'X' && rowsColumns[1][1] == 'X' &&
+                        rowsColumns[2][1] == 'X' && rowsColumns[3][1] == 'X')
+                || (rowsColumns[0][2] == 'X' && rowsColumns[1][2] == 'X' &&
+                rowsColumns[2][2] == 'X' && rowsColumns[3][2] == 'X') ||
+                (rowsColumns[0][3] == 'X' && rowsColumns[1][3] == 'X' &&
+                        rowsColumns[2][3] == 'X' && rowsColumns[3][3] == 'X')
+                || (rowsColumns[0][0] == 'X' && rowsColumns[1][1] == 'X' &&
+                rowsColumns[2][2] == 'X' && rowsColumns[3][3] == 'X') ||
+                (rowsColumns[3][0] == 'X' && rowsColumns[2][1] == 'X'
+                        && rowsColumns[1][2] == 'X' &&
+                        rowsColumns[0][3] == 'X')) {
+            winner = "human";
+        }
+        //If the computer player places 4 O's horizontally, vertically, or
+        // diagonally, they won the round.
+        else if((rowsColumns[0][0] == 'O' && rowsColumns[0][1] == 'O' &&
+                rowsColumns[0][2] == 'O' && rowsColumns[0][3] == 'O') ||
+                (rowsColumns[1][0] == 'O' && rowsColumns[1][1] == 'O' &&
+                        rowsColumns[1][2] == 'O' && rowsColumns[1][3] == 'O')
+                || (rowsColumns[2][0] == 'O' && rowsColumns[2][1] == 'O' &&
+                rowsColumns[2][2] == 'O' && rowsColumns[2][3] == 'O') ||
+                (rowsColumns[3][0] == 'O' && rowsColumns[3][1] == 'O' &&
+                        rowsColumns[3][2] == 'O' && rowsColumns[3][3] == 'O')
+                || (rowsColumns[0][0] == 'O' && rowsColumns[1][0] == 'O' &&
+                rowsColumns[2][0] == 'O' && rowsColumns[3][0] == 'O') ||
+                (rowsColumns[0][1] == 'O' && rowsColumns[1][1] == 'O' &&
+                        rowsColumns[2][1] == 'O' && rowsColumns[3][1] == 'O')
+                || (rowsColumns[0][2] == 'O' && rowsColumns[1][2] == 'O' &&
+                rowsColumns[2][2] == 'O' && rowsColumns[3][2] == 'O') ||
+                (rowsColumns[0][3] == 'O' && rowsColumns[1][3] == 'O' &&
+                        rowsColumns[2][3] == 'O' && rowsColumns[3][3] == 'O')
+                || (rowsColumns[0][0] == 'O' && rowsColumns[1][1] == 'O' &&
+                rowsColumns[2][2] == 'O' && rowsColumns[3][3] == 'O') ||
+                (rowsColumns[0][3] == 'O' && rowsColumns[1][2] == 'O') &&
+        rowsColumns[2][1] == 'O' && rowsColumns[3][0] == 'O'){
+            winner = "computer";
+        }
+        //If none of those two above conditions are true, then if there are
+        // no more empty spaces, there is a draw.
+        else if(numberEmptySpaces == 0) {
+            winner = "draw";
+        }
+        //If neither of these three game results occur, then there is
+        // no winner yet.
+        else {
+            winner = "none";
+        }
+
+        return winner;
+    }
+
+    /**
+     * Prints the game results and update the number of the human player's
+     * wins and computer player's wins as necessary
+     * @param winner the winner of the round
+     * @param numberEmptySpaces the number of empty spaces left in the grid
+     * @param humanWins the number of rounds the human player won
+     * @param computerWins the number of rounds the computer player won
+     * @return a conditional indicating whether the human player won,
+     * the computer player won, or there is a draw
+     */
+    public boolean printGameResults(String winner, int numberEmptySpaces,
+                                    int humanWins, int computerWins) {
+        winner = decideWinner(rowsColumns, numberEmptySpaces);
+        //The round ends only when there is a winner or when there is a draw.
+        if(winner.equals("human") || winner.equals("computer") ||
+                winner.equals("draw")) {
+            //Each the human player wins, update the number of their wins by 1.
+            if(winner.equals("human")) {
+                updateHumanWins();
+                System.out.println("You won!");
+            }
+            //Each time the computer player wins, update the number of their
+            // wins by 1.
+            else if(winner.equals("computer")) {
+                updateComputerWins();
+                System.out.println("The computer won!");
+            }
+            //Covers the case in which there is a draw
+            else {
+                System.out.println("It's a draw");
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Updates the number of rounds the human player won
+     */
+    public void updateHumanWins() {
+        humanWins++;
+    }
+
+    /**
+     * Updates the number of rounds the computer player won
+     */
+    public void updateComputerWins() {
+        computerWins++;
+    }
+}
