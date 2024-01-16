@@ -1,0 +1,32 @@
+import java.util.Scanner;
+
+/**
+ * Plays Tic Tac Toe on a 4x4 grid or a 3x3 grid, depending
+ * on user input
+ * @author Sarah Nasser
+ * @version 1.0.0 January 16, 2023
+ */
+
+public class TicTacToe {
+    private static final TicTacToe3x3 game1 = new TicTacToe3x3();
+    private static final TicTacToe4x4 game2 = new TicTacToe4x4();
+    public static void main(String[] args) {
+        System.out.println("You, the human player, will be playing " +
+                "TicTacToe with a computer player. You will be typing X's " +
+                "while the computer player will be typing O's");
+        Scanner userGame = new Scanner (System.in);
+        System.out.println("Do you want to play a 3x3 Tic Tac Toe game or " +
+                "a 4x4 Tic Tac Toe game? (Type 3x3 or 4x4)");
+        String userChoice = userGame.nextLine();
+        //If the user chooses to play Tic Tac Toe on a 3x3 grid
+        if(userChoice.equals("3x3")) {
+            game1.playGame();
+        }
+        //If the user chooses to play Tic Tac Toe on a 4x4 grid, or if they
+        // do not provide valid input
+        else if(userChoice.equals("4x4") || (!userChoice.equals("3x3") &&
+                !userChoice.equals("4x4"))) {
+            game2.playGame();
+        }
+    }
+}
