@@ -4,7 +4,7 @@ import java.util.Scanner;
 /**
  * Plays a game of Tic Tac Toe on a 3x3 grid
  * @author Sarah Nasser
- * @version 1.0 January 16, 2024
+ * @version 1.0 January 20, 2024
  */
 
 public class TicTacToe3x3 {
@@ -56,12 +56,6 @@ public class TicTacToe3x3 {
         int currentRound = 1;
         String winner = "";
 
-        //Sets up the Tic Tac Toe grid before the game by making
-        // all the spaces blank
-        for (char[] rowsColumn : rowsColumns) {
-            Arrays.fill(rowsColumn, ' ');
-        }
-
         //Plays the number of rounds of Tic Tac Toe the human player wants
         while(currentRound <= numberRounds) {
             int numberEmptySpaces = 9;
@@ -72,6 +66,11 @@ public class TicTacToe3x3 {
                     "--------------------------------------" + "\n Round: " +
                     currentRound + "\n" + "\n");
 
+            //Sets up the Tic Tac Toe grid at the beginning of each round by
+            // making all the spaces blank
+            for (char[] rowsColumn : rowsColumns) {
+                Arrays.fill(rowsColumn, ' ');
+            }
             //Game end\s when the human player wins, the computer player wins,
             // or when there is a draw
             while(!gameResultMade) {
@@ -164,19 +163,6 @@ public class TicTacToe3x3 {
                 }
             }
             currentRound++;
-            //Resets all the spaces in the grid after the results of the round
-            // have been determined only if there is a next possible round
-            if(currentRound != numberRounds + 1) {
-                rowsColumns[0][0] = ' ';
-                rowsColumns[0][1] = ' ';
-                rowsColumns[0][2] = ' ';
-                rowsColumns[1][0] = ' ';
-                rowsColumns[1][1] = ' ';
-                rowsColumns[1][2] = ' ';
-                rowsColumns[2][0] = ' ';
-                rowsColumns[2][1] = ' ';
-                rowsColumns[2][2] = ' ';
-            }
         }
 
         //After the number of rounds chosen by the human player, decide who
@@ -192,6 +178,8 @@ public class TicTacToe3x3 {
             System.out.println("You won the same number of rounds as the " +
                     "computer.");
         }
+
+        System.exit(0);
     }
 
     /**
@@ -398,7 +386,6 @@ public class TicTacToe3x3 {
     public void updateHumanWins() {
         humanWins++;
     }
-}
 
     /**
      * Updates the number of rounds the computer player won
@@ -406,3 +393,4 @@ public class TicTacToe3x3 {
     public void updateComputerWins() {
         computerWins++;
     }
+}
