@@ -28,5 +28,7 @@ public class TicTacToe {
                 !userChoice.equals("4x4"))) {
             game2.playGame();
         }
+
+        System.exit(0);
     }
 }
