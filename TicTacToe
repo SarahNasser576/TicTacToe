@@ -3,6 +3,8 @@ import java.util.Scanner;
 /**
  * Plays Tic Tac Toe on a 4x4 grid or a 3x3 grid, depending
  * on user input
+ * @author Sarah Nassser
+ * @version 1.0 January 20, 2024
  */
 
 public class TicTacToe {
